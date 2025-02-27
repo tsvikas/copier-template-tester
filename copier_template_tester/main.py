@@ -51,7 +51,7 @@ def run(*, base_dir: Path | None = None, check_untracked: bool = False) -> None:
         check_for_untracked(base_dir)
 
 
-def run_cli() -> None:  # pragma: no cover
+def run_cli() -> int:  # pragma: no cover
     """Accept CLI configuration for running ctt."""
     def dir_path(pth: str | None) -> Path:
         if pth and Path(pth).is_dir():
@@ -68,4 +68,9 @@ def run_cli() -> None:  # pragma: no cover
     cli.add_argument('--check-untracked', help='Only used for pre-commit', action='store_true')
 
     args = cli.parse_args()
-    run(base_dir=args.base_dir, check_untracked=args.check_untracked)
+    try:
+        run(base_dir=args.base_dir, check_untracked=args.check_untracked)
+    except Exception as e:
+        logger.error(f"ctt error: {e}")
+        return 1
+    return 0
